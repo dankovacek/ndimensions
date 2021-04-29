@@ -196,6 +196,13 @@ def update_system_info_text():
     <p>The "random scramble" at far right generates <strong>{image_frequency} random images per second</strong> at this reduced resolution.  At this rate, you can expect to see the "correct" image <strong>once every {time_text}.</strong>  
     </p>
     """
+    if ev_image > 31536000:
+        universe_age = 13.7E9
+        age_factor = (ev_image/31536000) / universe_age
+        if age_factor > 0.1:
+            system_description_div.text += f"""
+            <p style="color: red">{time_text} is <strong>~{age_factor:.1f}x the age of the universe.</strong><p>
+            """
 
 def redraw_pixels(attr, old, new):
 
@@ -203,19 +210,13 @@ def redraw_pixels(attr, old, new):
     dw = int(width_dropdown.value)
     colour_depth = int(colour_depth_selector.value)
 
-    # update pixellated image and gen new image
-
-    # update rando image resolution and gen new image
-
     img_array = np.array(img_gs) 
 
+    # update pixelated image and gen new image
     pixelated_array = digitized_array(img_array, (dh, dw), colour_depth)
-    rando_array = rando_scrambo_array(img_array, (dh, dw), colour_depth)
 
     pixelated_source.data = {'d': [pixelated_array]}
-    rando_source.data = {'d': [rando_array]}
     update_system_info_text()
-    # rando_source = ColumnDataSource(data=dict(d=[rando_array]))
 
 
 def update_rando_fig():
@@ -226,22 +227,12 @@ def update_rando_fig():
     dw = int(width_dropdown.value)
     colour_depth = int(colour_depth_selector.value)
 
-    # update pixellated image and gen new image
-
     # update rando image resolution and gen new image
     rando_array = rando_scrambo_array(np.array(img_gs), (dh, dw), colour_depth)
 
-    # pixelated_source.data = {'d': [pixelated_array]}
-    # rando_source.stream({'d': [rando_array]})
     rando_source.data = {'d': [rando_array]}
     update_system_info_text()
-    t1 = time()
-    tt = t1 - t0
-
-    # print(f'update time = {tt:.1f}')
-    # rando_source = ColumnDataSource(data=dict(d=[rando_array]))
-
-
+    
 
 
 height_dropdown.on_change('value', redraw_pixels)
@@ -260,10 +251,10 @@ intro_div.text = f"""
 <p>This interactive application was inspired by <a href="https://en.wikipedia.org/wiki/Richard_Hamming">Richard Hamming's</a> <em>"Art of Doing Science and Engineering"</em></p>
 <p>The <a href="https://blogs.scientificamerican.com/observations/ada-lovelace-day-honors-the-first-computer-programmer/">iconic image</a> below at left is {original_dims[0]} pixels wide by {original_dims[1]} pixels high in the original file.  Since the image is in greyscale, each pixel is represented by an integer value in the range [0, 255].</p> 
 
-<p>If the original image were represented as a system, there are ({original_dims[0]}x{original_dims[1]})<sup>256</sup> possible configurations (states).  In other words, If each pixel can take one of 256 values, and there are {original_dims[0]} x {original_dims[1]} = {n_pixels:,} pixels, the number of possible <em>unique</em> images is {n_pixels:,}<sup>256</sup>, or roughly <strong>10<sup>262</sup></strong>.  As a hopelessly inadequate basis of comparison, the <a href="https://physics.stackexchange.com/questions/47941/dumbed-down-explanation-how-scientists-know-the-number-of-atoms-in-the-universe">cosmological estimate of the number of <strong>atoms in the universe</a> is 10<sup>80</sup></strong>.  The set of all images of this size that humans can recognize is <strong>effectively zero</strong>.  Virtually every arrangement is unrecognizable to the human eye.  
+<p>If the original image were represented as a system, there are ({original_dims[0]}x{original_dims[1]})<sup>256</sup> possible configurations (states).  In other words, If each pixel can take one of 256 values, and there are {original_dims[0]} x {original_dims[1]} = {n_pixels:,} pixels, the number of possible <em>unique</em> images is {n_pixels:,}<sup>256</sup>, or roughly <strong>10<sup>262</sup></strong>.  As a hopelessly inadequate basis of comparison, the <a href="https://physics.stackexchange.com/questions/47941/dumbed-down-explanation-how-scientists-know-the-number-of-atoms-in-the-universe">cosmological estimate of the number of <strong>atoms in the universe</a> is 10<sup>80</sup></strong>.  The set of all images of this size that humans can recognize is <strong>effectively zero</strong>.  Virtually every arrangement is unrecognizable to the human eye.  </p>
 
-<p>So what is it about nature that makes patterns recognizable?  Or, rather, what is it about natural organisms that make pattern recognition not just possible, but common?</p>
-</p>
+<p>So what is it about organisms that make pattern recognition not just possible, but common?</p>
+
 """
 
 system_description_div = Div(width=350, height=400,
